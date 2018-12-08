@@ -350,7 +350,7 @@
 			return true;
 		}
 		
-		function build_move(board:Array, from:String, to:String, flags:int, promotion:int):Object {
+		public function build_move(board:Array, from:String, to:String, flags:int, promotion:int):Object {
 			var move:Object = {
 				color: turn,
 				from: from,
