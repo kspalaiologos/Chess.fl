@@ -368,5 +368,173 @@
 				move.captured = PAWN;
 			return move;
 		}
+		
+		function generate_moves(options:Object):Array {
+			function add_move(board:Object, moves:Array, from:String, to:String, flags:int) {
+				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
+					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
+					for (var i = 0:int, len:int = pieces.length; i < len; i++)
+						moves.push(build_move(board, from, to, flags, pieces[i]));
+				} else
+					moves.push(build_move(board, from, to, flags));
+			}
+			var moves:Array = new Array();
+			var us:int = turn;
+			var them:int = swap_color(us);
+			var second_rank:Object = { b: RANK_7, w: RANK_2 };
+			var first_sq:int = SQUARES.a8;
+			var last_sq:int = SQUARES.h1;
+			var single_square:Boolean = false;
+			var legal:Boolean = options.legal;
+			if (options.square >= 0 || options.square < 0) {
+				if (options.square in SQUARES) {
+					first_sq = last_sq = SQUARES[options.square];
+					single_square = true;
+				} else {
+					return new Array();
+				}
+			}
+			for (var i:int = first_sq; i <= last_sq; i++) {
+				if (i & 0x88) {
+					i += 7;
+					continue;
+				}
+				var piece:int = board[i];
+				if (piece == null || piece.color != us)
+					continue;
+				if (piece.type == PAWN) {
+					var square:int = i + PAWN_OFFSETS[us][0];
+					if (board[square] == null) {
+						add_move(board, moves, i, square, BITS.NORMAL);
+						var square:int = i + PAWN_OFFSETS[us][1];
+						if (second_rank[us] == rank(i) && board[square] == null)
+							add_move(board, moves, i, square, BITS.BIG_PAWN);
+					}
+					for (j = 2; j < 4; j++) {
+						var square:int = i + PAWN_OFFSETS[us][j];
+						if (square & 0x88) continue;
+						if (board[square] != null && board[square].color == them)
+							add_move(board, moves, i, square, BITS.CAPTURE);
+						else if (square == ep_square)
+							add_move(board, moves, i, ep_square, BITS.EP_CAPTURE);
+					}
+				} else {
+					for (var j:int = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+						var offset:int = PIECE_OFFSETS[piece.type][j];
+						var square:int = i;
+						while (true) {
+							square += offset;
+							if (square & 0x88) break;
+							if (board[square] == null)
+								add_move(board, moves, i, square, BITS.NORMAL);
+							else {
+								if (board[square].color === us) break;
+								add_move(board, moves, i, square, BITS.CAPTURE);
+								break;
+							}
+							if (piece.type === 'n' || piece.type === 'k') break;
+						}
+					}
+				}
+			}
+			if (!single_square || last_sq === kings[us]) {
+				if (castling[us] & BITS.KSIDE_CASTLE) {
+					var castling_from:int = kings[us];
+					var castling_to:int = castling_from + 2;
+					if (board[castling_from + 1] == null && board[castling_to] == null && !attacked(them, kings[us]) && !attacked(them, castling_from + 1) && !attacked(them, castling_to))
+						add_move(board, moves, kings[us], castling_to, BITS.KSIDE_CASTLE);
+				}
+				if (castling[us] & BITS.QSIDE_CASTLE) {
+					var castling_from:int = kings[us];
+					var castling_to:int = castling_from - 2;
+					if (board[castling_from - 1] == null && board[castling_from - 2] == null && board[castling_from - 3] == null && !attacked(them, kings[us]) && !attacked(them, castling_from - 1) && !attacked(them, castling_to))
+						add_move(board, moves, kings[us], castling_to, BITS.QSIDE_CASTLE);
+				}
+			}
+			if (!legal)
+				return moves;
+			var legal_moves:Array = new Array();
+			for (var i:int = 0, len = moves.length; i < len; i++) {
+				make_move(moves[i]);
+				if (!king_attacked(us))
+					legal_moves.push(moves[i]);
+				undo_move();
+			}
+			return legal_moves;
+		}
+		
+		function move_to_san(move:Object, sloppy:Boolean):String {
+			var output:String = '';
+			if (move.flags & BITS.KSIDE_CASTLE)
+				output = 'O-O';
+			else if (move.flags & BITS.QSIDE_CASTLE)
+				output = 'O-O-O';
+			else {
+				var disambiguator = get_disambiguator(move, sloppy);
+				if (move.piece !== PAWN)
+					output += move.piece.toUpperCase() + disambiguator;
+				if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
+					if (move.piece === PAWN)
+						output += algebraic(move.from)[0];
+					output += 'x';
+				}
+				output += algebraic(move.to);
+				if (move.flags & BITS.PROMOTION)
+					output += '=' + move.promotion.toUpperCase();
+			}
+			make_move(move);
+			if (in_check()) {
+				if (in_checkmate())
+					output += '#';
+		
+				else
+					output += '+';
+			}
+			undo_move();
+			return output;
+		}
+		
+		function stripped_san(move:String):String {
+			return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
+		}
+		
+		function attacked(color:String, square:int):Boolean {
+			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+				/* did we run off the end of the board */
+				if (i & 0x88) {
+					i += 7;
+					continue;
+				}
+				/* if empty square or wrong color */
+				if (board[i] == null || board[i].color !== color) continue;
+				var piece = board[i];
+				var difference = i - square;
+				var index = difference + 119;
+				if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
+					if (piece.type === PAWN) {
+						if (difference > 0) {
+							if (piece.color === WHITE) return true;
+						} else {
+							if (piece.color === BLACK) return true;
+						}
+						continue;
+					}
+					/* if the piece is a knight or a king */
+					if (piece.type === 'n' || piece.type === 'k') return true;
+					var offset = RAYS[index];
+					var j = i + offset;
+					var blocked = false;
+					while (j !== square) {
+						if (board[j] != null) {
+							blocked = true;
+							break;
+						}
+						j += offset;
+					}
+					if (!blocked) return true;
+				}
+			}
+			return false;
+		}
 	}
 }
