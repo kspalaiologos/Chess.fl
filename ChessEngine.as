@@ -726,7 +726,7 @@
 			return move;
 		}
 		
-		function get_disambiguator(move:Object, sloppy:Boolean):String {
+		public function get_disambiguator(move:Object, sloppy:Boolean):String {
 			var moves:Array = generate_moves({ legal: !sloppy });
 			var from:String = move.from;
 			var to:String = move.to;
@@ -758,5 +758,7 @@
 			}
 			return '';
 		}
+		
+		
 	}
 }
