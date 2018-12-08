@@ -725,5 +725,38 @@
 			}
 			return move;
 		}
+		
+		function get_disambiguator(move:Object, sloppy:Boolean):String {
+			var moves:Array = generate_moves({ legal: !sloppy });
+			var from:String = move.from;
+			var to:String = move.to;
+			var piece:Object = move.piece;
+			var ambiguities:int = 0;
+			var same_rank:int = 0;
+			var same_file:int = 0;
+			for (var i:int = 0, len:int = moves.length; i < len; i++) {
+				var ambig_from:String = moves[i].from;
+				var ambig_to:String = moves[i].to;
+				var ambig_piece:Object = moves[i].piece;
+				if (piece === ambig_piece && from !== ambig_from && to === ambig_to) {
+					ambiguities++;
+					if (rank(from) === rank(ambig_from))
+						same_rank++;
+					if (file(from) === file(ambig_from))
+						same_file++;
+				}
+			}
+			if (ambiguities > 0) {
+				if (same_rank > 0 && same_file > 0)
+					return algebraic(from);
+				else if (same_file > 0) {
+					return algebraic(from).charAt(1);
+				} else {
+					/* else use the file symbol */
+					return algebraic(from).charAt(0);
+				}
+			}
+			return '';
+		}
 	}
 }
