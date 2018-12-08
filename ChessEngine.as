@@ -759,13 +759,11 @@
 			return '';
 		}
 		
-		function ascii():String {
+		public function ascii():String {
 			var s:String = '   +------------------------+\n';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
-				/* display the rank */
 				if (file(i) === 0)
 					s += ' ' + '87654321'[rank(i)] + ' |';
-				/* empty piece */
 				if (board[i] == null)
 					s += ' . ';
 		
@@ -783,6 +781,56 @@
 			s += '   +------------------------+\n';
 			s += '     a  b  c  d  e  f  g  h\n';
 			return s;
+		}
+		
+		public function move_from_san(move:Object, sloppy:Boolean):Object {
+			var clean_move:String = stripped_san(move);
+			if (sloppy) {
+				var matches:Array = clean_move.match(/([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/);
+				if (matches) {
+					var piece:Object = matches[1];
+					var from:String = matches[2];
+					var to:String = matches[3];
+					var promotion:int = matches[4];
+				}
+			}
+			var moves:Array = generate_moves();
+			for (var i:int = 0, len = moves.length; i < len; i++) {
+				if (clean_move == stripped_san(move_to_san(moves[i])) || (sloppy && clean_move == stripped_san(move_to_san(moves[i], true))))
+					return moves[i];
+				else {
+					if (
+						matches &&
+						(!piece || piece.toLowerCase() == moves[i].piece) &&
+						SQUARES[from] == moves[i].from &&
+						SQUARES[to] == moves[i].to &&
+						(!promotion || promotion.toLowerCase() == moves[i].promotion)
+					)
+						return moves[i];
+				}
+			}
+			return null;
+		}
+		
+		public function rank(i:int):int {
+			return i >> 4;
+		}
+		
+		public function file(i:int):int {
+			return i & 15;
+		}
+		
+		public function algebraic(i:int):String {
+			var f:int = file(i), r:int = rank(i);
+			return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
+		}
+		
+		public function swap_color(c:int):String {
+			return c == WHITE ? BLACK : WHITE;
+		}
+		
+		public function is_digit(c:String):Boolean {
+			return '0123456789'.indexOf(c) != -1;
 		}
 	}
 }
