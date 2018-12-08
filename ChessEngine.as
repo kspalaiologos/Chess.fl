@@ -463,7 +463,7 @@
 			return legal_moves;
 		}
 		
-		function move_to_san(move:Object, sloppy:Boolean):String {
+		public function move_to_san(move:Object, sloppy:Boolean):String {
 			var output:String = '';
 			if (move.flags & BITS.KSIDE_CASTLE)
 				output = 'O-O';
@@ -494,11 +494,11 @@
 			return output;
 		}
 		
-		function stripped_san(move:String):String {
+		public function stripped_san(move:String):String {
 			return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
 		}
 		
-		function attacked(color:String, square:int):Boolean {
+		public function attacked(color:String, square:int):Boolean {
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				/* did we run off the end of the board */
 				if (i & 0x88) {
