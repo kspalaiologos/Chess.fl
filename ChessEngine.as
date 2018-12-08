@@ -535,5 +535,21 @@
 			}
 			return false;
 		}
+		
+		public function king_attacked(color:String):Boolean {
+			return attacked(swap_color(color), kings[color]);
+		}
+		
+		public function in_check():Boolean {
+			return king_attacked(turn);
+		}
+		
+		public function in_checkmate():Boolean {
+			return in_check() && generate_moves().length === 0;
+		}
+		
+		public function in_stalemate():Boolean {
+			return !in_check() && generate_moves().length === 0;
+		}
 	}
 }
