@@ -589,6 +589,27 @@
 			return false;
 		}
 		
+		function in_threefold_repetition():Boolean {
+			var moves:Array = new Array();
+			var positions:Object = new Object();
+			var repetition:Boolean = false;
+			while (true) {
+				var move = undo_move();
+				if (!move) break;
+				moves.push(move);
+			}
+			while (true) {
+				var fen:String = generate_fen() .split(' ').slice(0, 4).join(' ');
+				positions[fen] = fen in positions ? positions[fen] + 1 : 1;
+				if (positions[fen] >= 3)
+					repetition = true;
+				if (!moves.length)
+					break;
+				make_move(moves.pop());
+			}
+			return repetition;
+		}
+		
 		
 	}
 }
