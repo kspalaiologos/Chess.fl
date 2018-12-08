@@ -684,5 +684,46 @@
 				move_number++;
 			turn = swap_color(turn);
 		}
+		
+		public function undo_move():String {
+			var old:Object = history.pop();
+			if (old == null)
+				return null;
+			var move:String = old.move;
+			kings = old.kings;
+			turn = old.turn;
+			castling = old.castling;
+			ep_square = old.ep_square;
+			half_moves = old.half_moves;
+			move_number = old.move_number;
+			var us:String = turn;
+			var them:String = swap_color(turn);
+			board[move.from] = board[move.to];
+			board[move.from].type = move.piece;
+			board[move.to] = null;
+			if (move.flags & BITS.CAPTURE) {
+				board[move.to] = { type: move.captured, color: them };
+			} else if (move.flags & BITS.EP_CAPTURE) {
+				var index:int;
+				if (us == BLACK)
+					index = move.to - 16;
+				else
+					index = move.to + 16;
+				board[index] = { type: PAWN, color: them };
+			}
+			if (move.flags & (BITS.KSIDE_CASTLE | BITS.QSIDE_CASTLE)) {
+				var castling_to, castling_from;
+				if (move.flags & BITS.KSIDE_CASTLE) {
+					castling_to = move.to + 1;
+					castling_from = move.to - 1;
+				} else if (move.flags & BITS.QSIDE_CASTLE) {
+					castling_to = move.to - 2;
+					castling_from = move.to + 1;
+				}
+				board[castling_to] = board[castling_from];
+				board[castling_from] = null;
+			}
+			return move;
+		}
 	}
 }
