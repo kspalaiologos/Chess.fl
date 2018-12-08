@@ -610,6 +610,16 @@
 			return repetition;
 		}
 		
-		
+		function push(move:String):void {
+			history.push({
+				move: move,
+				kings: { b: kings.b, w: kings.w },
+				turn: turn,
+				castling: { b: castling.b, w: castling.w },
+				ep_square: ep_square,
+				half_moves: half_moves,
+				move_number: move_number
+			});
+		}
 	}
 }
