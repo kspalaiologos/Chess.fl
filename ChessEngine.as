@@ -334,5 +334,20 @@
 			var piece:int = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
+		
+		function put(piece:Object, square:String):Boolean {
+			if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1)
+				return false;
+			if (!(square in SQUARES))
+				return false;
+			var sq:int = SQUARES[square];
+			if (piece.type == KING && !(kings[piece.color] == EMPTY || kings[piece.color] == sq))
+				return false;
+			board[sq] = { type: piece.type, color: piece.color };
+			if (piece.type === KING)
+				kings[piece.color] = sq;
+			update_setup(generate_fen());
+			return true;
+		}
 	}
 }
