@@ -318,5 +318,16 @@
 				header[args[i]] = args[i + 1];
 			return header;
 		}
+		
+		function update_setup(fen:String) {
+			if (history.length > 0) return;
+			if (fen != DEFAULT_POSITION) {
+				header['SetUp'] = '1';
+				header['FEN'] = fen;
+			} else {
+				header['SetUp'] = null;
+				header['FEN'] = null;
+			}
+		}
 	}
 }
