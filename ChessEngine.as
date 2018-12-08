@@ -209,7 +209,7 @@
 			return true;
 		}
 		
-		private function validate_fen(fen:String):Object {
+		public function validate_fen(fen:String):Object {
 			var errors = new Array(
 				'No errors.',
 				'FEN string must contain six space-delimited fields.',
@@ -269,7 +269,7 @@
 			return { valid: true, error_number: 0, error: errors[0] };
 		}
 		
-		private function generate_fen():String {
+		public function generate_fen():String {
 			var empty:int = 0;
 			var fen:String = '';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
@@ -464,7 +464,7 @@
 			else if (move.flags & BITS.QSIDE_CASTLE)
 				output = 'O-O-O';
 			else {
-				var disambiguator = getSquare_disambiguator(move, sloppy);
+				var disambiguator = get_disambiguator(move, sloppy);
 				if (move.piece !== PAWN)
 					output += move.piece.toUpperCase() + disambiguator;
 				if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
@@ -536,19 +536,38 @@
 			return attacked(swap_color(color), kings[color]);
 		}
 		
-		private function in_check():Boolean {
+		public function in_check():Boolean {
 			return king_attacked(turn);
 		}
 		
-		private function in_checkmate():Boolean {
+		public function in_checkmate():Boolean {
 			return in_check() && generate_moves().length === 0;
 		}
 		
-		private function in_stalemate():Boolean {
+		public function in_stalemate():Boolean {
 			return !in_check() && generate_moves().length === 0;
 		}
 		
-		private function insufficient_material():Boolean {
+		public function in_draw():Boolean {
+			return (
+                   half_moves >= 100 ||
+                   in_stalemate() ||
+                   insufficient_material() ||
+                   in_threefold_repetition()
+            );
+		}
+		
+		public function game_over():Boolean {
+			 return (
+                   half_moves >= 100 ||
+                   in_checkmate() ||
+                   in_stalemate() ||
+                   insufficient_material() ||
+                   in_threefold_repetition()
+             );
+		}
+		
+		public function insufficient_material():Boolean {
 			var pieces:Object = new Object();
 			var bishops:Array = new Array();
 			var num_pieces:int = 0;
@@ -583,7 +602,7 @@
 			return false;
 		}
 		
-		private function in_threefold_repetition():Boolean {
+		public function in_threefold_repetition():Boolean {
 			var moves:Array = new Array();
 			var positions:Object = new Object();
 			var repetition:Boolean = false;
@@ -720,7 +739,7 @@
 			return move;
 		}
 		
-		private function getSquare_disambiguator(move:Object, sloppy:Boolean):String {
+		private function get_disambiguator(move:Object, sloppy:Boolean):String {
 			var moves:Array = generate_moves({ legal: !sloppy });
 			var from:String = move.from;
 			var to:String = move.to;
@@ -860,6 +879,14 @@
 			if(fen == null) {
 				load(DEFAULT_POSITION);
 			} else load(fen);
+		}
+		
+		public function moves(options:Object):Array {
+			var ugly_moves:Object = generate_moves(options);
+			var moves:Array = new Array();
+			for (var i:int = 0, len:int = ugly_moves.length; i < len; i++)
+				moves.push(move_to_san(ugly_moves[i], false));
+			return moves;
 		}
 	}
 }
