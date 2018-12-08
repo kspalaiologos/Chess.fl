@@ -509,11 +509,13 @@
 				var difference:int = i - square;
 				var index:int = difference + 119;
 				if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
-					if (piece.type === PAWN) {
+					if (piece.type == PAWN) {
 						if (difference > 0) {
-							if (piece.color === WHITE) return true;
+							if (piece.color == WHITE)
+								return true;
 						} else {
-							if (piece.color === BLACK) return true;
+							if (piece.color == BLACK)
+								return true;
 						}
 						continue;
 					}
