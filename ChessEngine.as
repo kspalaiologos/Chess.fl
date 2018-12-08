@@ -553,5 +553,42 @@
 		public function in_stalemate():Boolean {
 			return !in_check() && generate_moves().length === 0;
 		}
+		
+		public function insufficient_material():Boolean {
+			var pieces:Object = new Object();
+			var bishops:Array = new Array();
+			var num_pieces:int = 0;
+			var sq_color:int = 0;
+			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+				sq_color = (sq_color + 1) % 2;
+				if (i & 0x88) {
+					i += 7;
+					continue;
+				}
+				var piece:Object = board[i];
+				if (piece) {
+					pieces[piece.type] = piece.type in pieces ? pieces[piece.type] + 1 : 1;
+					if (piece.type === BISHOP)
+						bishops.push(sq_color);
+					num_pieces++;
+				}
+			}
+			
+			if (num_pieces == 2)
+				return true;
+			else if (num_pieces == 3 && (pieces[BISHOP] == 1 || pieces[KNIGHT] == 1))
+				return true;
+			else if (num_pieces === pieces[BISHOP] + 2) {
+				var sum:int = 0;
+				var len:int = bishops.length;
+				for (var i:int = 0; i < len; i++)
+					sum += bishops[i];
+				if (sum == 0 || sum == len)
+					return true;
+			}
+			return false;
+		}
+		
+		
 	}
 }
