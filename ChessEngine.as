@@ -167,7 +167,7 @@
 			load(DEFAULT_POSITION);
 		}
 		
-		function load(fen:String, keep_headers:Boolean = false) {
+		function load(fen:String, keep_headers:Boolean = false):Boolean {
 			var tokens:Array = fen.split(/\s+/);
 			var position:String = tokens[0];
 			var square:int = 0;
@@ -215,7 +215,7 @@
 			return true;
   		}
 		
-		function validate_fen(fen:String) {
+		function validate_fen(fen:String):Object {
 			var errors = new Array(
 				'No errors.',
 				'FEN string must contain six space-delimited fields.',
@@ -275,7 +275,7 @@
 			return { valid: true, error_number: 0, error: errors[0] };
 		}
 		
-		function generate_fen() {
+		function generate_fen():String {
 			var empty:int = 0;
 			var fen:String = '';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
@@ -286,8 +286,8 @@
 						fen += empty;
 						empty = 0;
 					}
-					var color = board[i].color;
-					var piece = board[i].type;
+					var color:String = board[i].color;
+					var piece:String = board[i].type;
 					fen += color == WHITE ? piece.toUpperCase() : piece.toLowerCase();
 				}
 				if ((i + 1) & 0x88) {
@@ -313,13 +313,13 @@
 			return [fen, turn, cflags, epflags, half_moves, move_number].join(' ');
 		}
 		
-		function set_header(args:Array) {
+		function set_header(args:Object):Object {
 			for (var i = 0; i < args.length; i += 2)
 				header[args[i]] = args[i + 1];
 			return header;
 		}
 		
-		function update_setup(fen:String) {
+		function update_setup(fen:String):void {
 			if (history.length > 0) return;
 			if (fen != DEFAULT_POSITION) {
 				header['SetUp'] = '1';
@@ -328,6 +328,11 @@
 				header['SetUp'] = null;
 				header['FEN'] = null;
 			}
+		}
+		
+		function get(square:String):Object {
+			var piece:int = board[SQUARES[square]];
+			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 	}
 }
