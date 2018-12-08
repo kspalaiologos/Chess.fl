@@ -832,5 +832,34 @@
 		public function is_digit(c:String):Boolean {
 			return '0123456789'.indexOf(c) != -1;
 		}
+		
+		public function make_pretty(ugly_move:Object):Object {
+			var move = clone(ugly_move);
+			move.san = move_to_san(move, false);
+			move.to = algebraic(move.to);
+			move.from = algebraic(move.from);
+			var flags:String = '';
+			for (var flag:int in BITS) {
+				if (BITS[flag] & move.flags)
+					flags += FLAGS[flag];
+			}
+			move.flags = flags;
+			return move;
+		}
+		
+		public function clone(obj:Object):Object {
+			var dupe = obj instanceof Array ? new Array() : new Object();
+			for (var property:String in obj) {
+				if (typeof property == 'object')
+					dupe[property] = clone(obj[property]);
+				else
+					dupe[property] = obj[property];
+			}
+			return dupe;
+		}
+		
+		public function trim(str:String):String {
+			return str.replace(/^\s+|\s+$/g, '');
+		}
 	}
 }
