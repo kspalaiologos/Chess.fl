@@ -589,7 +589,7 @@
 			return false;
 		}
 		
-		function in_threefold_repetition():Boolean {
+		public function in_threefold_repetition():Boolean {
 			var moves:Array = new Array();
 			var positions:Object = new Object();
 			var repetition:Boolean = false;
@@ -610,7 +610,7 @@
 			return repetition;
 		}
 		
-		function push(move:String):void {
+		public function push(move:String):void {
 			history.push({
 				move: move,
 				kings: { b: kings.b, w: kings.w },
@@ -622,7 +622,7 @@
 			});
 		}
 		
-		function make_move(move:String):void {
+		public function make_move(move:String):void {
 			var us:String = turn;
 			var them:String = swap_color(us);
 			push(move);
@@ -667,22 +667,17 @@
 					}
 				}
 			}
-			/* if big pawn move, update the en passant square */
 			if (move.flags & BITS.BIG_PAWN) {
-				if (turn === 'b')
+				if (turn == 'b')
 					ep_square = move.to - 16;
-		
 				else
 					ep_square = move.to + 16;
 			} else
 				ep_square = EMPTY;
-			/* reset the 50 move counter if a pawn is moved or a piece is captured */
-			if (move.piece === PAWN)
+			if (move.piece == PAWN)
 				half_moves = 0;
-		
 			else if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE))
 				half_moves = 0;
-		
 			else
 				half_moves++;
 			if (turn === BLACK)
