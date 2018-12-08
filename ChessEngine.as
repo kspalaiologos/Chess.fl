@@ -2,7 +2,7 @@
 	public class ChessEngine {
 		public var BLACK:String = 'b';
 		public var WHITE:String = 'w';
-		public var EMPTY:int = -1;
+		private var EMPTY:int = -1;
 		
 		public var PAWN:String = 'p';
 		public var KNIGHT:String = 'n';
@@ -10,16 +10,16 @@
 		public var ROOK:String = 'r';
 		public var QUEEN:String = 'q';
 		public var KING:String = 'k';
-		public var SYMBOLS:String = 'pnbrqkPNBRQK';
-		public var DEFAULT_POSITION:String = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-		public var POSSIBLE_RESULTS:Array = new Array('1-0', '0-1', '1/2-1/2', '*');
+		private var SYMBOLS:String = 'pnbrqkPNBRQK';
+		private var DEFAULT_POSITION:String = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+		private var POSSIBLE_RESULTS:Array = new Array('1-0', '0-1', '1/2-1/2', '*');
 		
-		public var PAWN_OFFSETS:Object = {
+		private var PAWN_OFFSETS:Object = {
 			b: new Array(16, 32, 17, 15),
 			w: new Array(-16, -32, -17, -15)
 		};
 		
-		public var PIECE_OFFSETS:Object = {
+		private var PIECE_OFFSETS:Object = {
 			n: new Array(-18, -33, -31, -14, 18, 33, 31, 14),
 			b: new Array(-17, -15, 17, 15),
 			r: new Array(-16, 1, 16, -1),
@@ -27,7 +27,7 @@
 			k: new Array(-17, -16, -15, 1, 17, 16, 15, -1)
 		};
 		
-		public var ATTACKS:Array = new Array(
+		private var ATTACKS:Array = new Array(
 			20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
 			0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
 			0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
@@ -45,7 +45,7 @@
 			20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
 		);
 		
-		public var RAYS:Array = new Array(
+		private var RAYS:Array = new Array(
 			17,	 0,	 0,	 0,	 0,	 0,	 0, 16,	 0,	 0,	 0,	 0,	 0,	 0, 15, 0,
 			0, 17,	0,	0,	0,	0,	0, 16,	0,	0,	0,	0,	0, 15,	0, 0,
 			0,	0, 17,	0,	0,	0,	0, 16,	0,	0,	0,	0, 15,	0,	0, 0,
@@ -63,7 +63,7 @@
 			-15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
 		);
 		
-		public var SHIFTS:Object = {
+		private var SHIFTS:Object = {
 			p: 0,
 			n: 1,
 			b: 2,
@@ -82,7 +82,7 @@
 			QSIDE_CASTLE: 'q'
 		};
 		
-		public var BITS:Object = {
+		private var BITS:Object = {
 			NORMAL: 1,
 			CAPTURE: 2,
 			BIG_PAWN: 4,
@@ -92,16 +92,16 @@
 			QSIDE_CASTLE: 64
 		};
 		
-		public var RANK_1:int = 7;
-		public var RANK_2:int = 6;
-		public var RANK_3:int = 5;
-		public var RANK_4:int = 4;
-		public var RANK_5:int = 3;
-		public var RANK_6:int = 2;
-		public var RANK_7:int = 1;
-		public var RANK_8:int = 0;
+		private var RANK_1:int = 7;
+		private var RANK_2:int = 6;
+		private var RANK_3:int = 5;
+		private var RANK_4:int = 4;
+		private var RANK_5:int = 3;
+		private var RANK_6:int = 2;
+		private var RANK_7:int = 1;
+		private var RANK_8:int = 0;
 		
-		public var SQUARES:Object = {
+		private var SQUARES:Object = {
 			a8:	  0, b8:   1, c8:	2, d8:	 3, e8:	  4, f8:   5, g8:	6, h8:	 7,
 			a7:	 16, b7:  17, c7:  18, d7:	19, e7:	 20, f7:  21, g7:  22, h7:	23,
 			a6:	 32, b6:  33, c6:  34, d6:	35, e6:	 36, f6:  37, g6:  38, h6:	39,
@@ -112,7 +112,7 @@
 			a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
 		};
 		
-		public var ROOKS:Object = {
+		private var ROOKS:Object = {
 			w: new Array(
 				{square: SQUARES.a1, flag: BITS.QSIDE_CASTLE},
 				{square: SQUARES.h1, flag: BITS.KSIDE_CASTLE}
@@ -123,33 +123,27 @@
 			)
 		};
 		
-		public var board:Array = new Array();
+		private var board:Array = new Array();
 		
-		public var kings:Object = {
+		private var kings:Object = {
 			w: EMPTY,
 			b: EMPTY
 		};
 		
-		public var turn:String = WHITE;
+		private var turn:String = WHITE;
 		
-		public var castling:Object = {
+		private var castling:Object = {
 			w: 0,
 			b: 0
 		};
 		
-		public var ep_square:int = EMPTY;
-		public var half_moves:int = 0;
-		public var move_number:int = 1;
-		public var history:Array = new Array();
-		public var header:Object = new Object();
+		private var ep_square:int = EMPTY;
+		private var half_moves:int = 0;
+		private var move_number:int = 1;
+		private var history:Array = new Array();
+		private var header:Object = new Object();
 		
-		public function ChessEngine(fen:String = null) {
-			if(fen == null) {
-				load(DEFAULT_POSITION);
-			} else load(fen);
-		}
-		
-		public function clear(keep_headers:Boolean = false):void {
+		private function clear(keep_headers:Boolean = false):void {
 			board = new Array();
 			kings = {w: EMPTY, b: EMPTY};
 			turn = WHITE;
@@ -215,7 +209,7 @@
 			return true;
 		}
 		
-		public function validate_fen(fen:String):Object {
+		private function validate_fen(fen:String):Object {
 			var errors = new Array(
 				'No errors.',
 				'FEN string must contain six space-delimited fields.',
@@ -275,7 +269,7 @@
 			return { valid: true, error_number: 0, error: errors[0] };
 		}
 		
-		public function generate_fen():String {
+		private function generate_fen():String {
 			var empty:int = 0;
 			var fen:String = '';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
@@ -313,13 +307,13 @@
 			return [fen, turn, cflags, epflags, half_moves, move_number].join(' ');
 		}
 		
-		public function set_header(args:Object):Object {
+		private function set_header(args:Object):Object {
 			for (var i = 0; i < args.length; i += 2)
 				header[args[i]] = args[i + 1];
 			return header;
 		}
 		
-		public function update_setup(fen:String):void {
+		private function update_setup(fen:String):void {
 			if (history.length > 0) return;
 			if (fen != DEFAULT_POSITION) {
 				header['SetUp'] = '1';
@@ -330,12 +324,12 @@
 			}
 		}
 		
-		public function get(square:String):Object {
+		private function getSquare(square:String):Object {
 			var piece:int = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 		
-		public function put(piece:Object, square:String):Boolean {
+		private function put(piece:Object, square:String):Boolean {
 			if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1)
 				return false;
 			if (!(square in SQUARES))
@@ -350,7 +344,7 @@
 			return true;
 		}
 		
-		public function build_move(board:Array, from:String, to:String, flags:int, promotion:int):Object {
+		private function build_move(board:Array, from:String, to:String, flags:int, promotion:int):Object {
 			var move:Object = {
 				color: turn,
 				from: from,
@@ -369,7 +363,7 @@
 			return move;
 		}
 		
-		public function generate_moves(options:Object):Array {
+		private function generate_moves(options:Object):Array {
 			function add_move(board:Object, moves:Array, from:String, to:String, flags:int) {
 				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
 					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
@@ -463,14 +457,14 @@
 			return legal_moves;
 		}
 		
-		public function move_to_san(move:Object, sloppy:Boolean):String {
+		private function move_to_san(move:Object, sloppy:Boolean):String {
 			var output:String = '';
 			if (move.flags & BITS.KSIDE_CASTLE)
 				output = 'O-O';
 			else if (move.flags & BITS.QSIDE_CASTLE)
 				output = 'O-O-O';
 			else {
-				var disambiguator = get_disambiguator(move, sloppy);
+				var disambiguator = getSquare_disambiguator(move, sloppy);
 				if (move.piece !== PAWN)
 					output += move.piece.toUpperCase() + disambiguator;
 				if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
@@ -494,11 +488,11 @@
 			return output;
 		}
 		
-		public function stripped_san(move:String):String {
+		private function stripped_san(move:String):String {
 			return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
 		}
 		
-		public function attacked(color:String, square:int):Boolean {
+		private function attacked(color:String, square:int):Boolean {
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (i & 0x88) {
 					i += 7;
@@ -538,23 +532,23 @@
 			return false;
 		}
 		
-		public function king_attacked(color:String):Boolean {
+		private function king_attacked(color:String):Boolean {
 			return attacked(swap_color(color), kings[color]);
 		}
 		
-		public function in_check():Boolean {
+		private function in_check():Boolean {
 			return king_attacked(turn);
 		}
 		
-		public function in_checkmate():Boolean {
+		private function in_checkmate():Boolean {
 			return in_check() && generate_moves().length === 0;
 		}
 		
-		public function in_stalemate():Boolean {
+		private function in_stalemate():Boolean {
 			return !in_check() && generate_moves().length === 0;
 		}
 		
-		public function insufficient_material():Boolean {
+		private function insufficient_material():Boolean {
 			var pieces:Object = new Object();
 			var bishops:Array = new Array();
 			var num_pieces:int = 0;
@@ -589,7 +583,7 @@
 			return false;
 		}
 		
-		public function in_threefold_repetition():Boolean {
+		private function in_threefold_repetition():Boolean {
 			var moves:Array = new Array();
 			var positions:Object = new Object();
 			var repetition:Boolean = false;
@@ -610,7 +604,7 @@
 			return repetition;
 		}
 		
-		public function push(move:String):void {
+		private function push(move:String):void {
 			history.push({
 				move: move,
 				kings: { b: kings.b, w: kings.w },
@@ -622,7 +616,7 @@
 			});
 		}
 		
-		public function make_move(move:String):void {
+		private function make_move(move:String):void {
 			var us:String = turn;
 			var them:String = swap_color(us);
 			push(move);
@@ -685,7 +679,7 @@
 			turn = swap_color(turn);
 		}
 		
-		public function undo_move():String {
+		private function undo_move():String {
 			var old:Object = history.pop();
 			if (old == null)
 				return null;
@@ -726,7 +720,7 @@
 			return move;
 		}
 		
-		public function get_disambiguator(move:Object, sloppy:Boolean):String {
+		private function getSquare_disambiguator(move:Object, sloppy:Boolean):String {
 			var moves:Array = generate_moves({ legal: !sloppy });
 			var from:String = move.from;
 			var to:String = move.to;
@@ -759,7 +753,7 @@
 			return '';
 		}
 		
-		public function ascii():String {
+		private function ascii():String {
 			var s:String = '   +------------------------+\n';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (file(i) === 0)
@@ -783,7 +777,7 @@
 			return s;
 		}
 		
-		public function move_from_san(move:Object, sloppy:Boolean):Object {
+		private function move_from_san(move:Object, sloppy:Boolean):Object {
 			var clean_move:String = stripped_san(move);
 			if (sloppy) {
 				var matches:Array = clean_move.match(/([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/);
@@ -812,28 +806,28 @@
 			return null;
 		}
 		
-		public function rank(i:int):int {
+		private function rank(i:int):int {
 			return i >> 4;
 		}
 		
-		public function file(i:int):int {
+		private function file(i:int):int {
 			return i & 15;
 		}
 		
-		public function algebraic(i:int):String {
+		private function algebraic(i:int):String {
 			var f:int = file(i), r:int = rank(i);
 			return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
 		}
 		
-		public function swap_color(c:int):String {
+		private function swap_color(c:int):String {
 			return c == WHITE ? BLACK : WHITE;
 		}
 		
-		public function is_digit(c:String):Boolean {
+		private function is_digit(c:String):Boolean {
 			return '0123456789'.indexOf(c) != -1;
 		}
 		
-		public function make_pretty(ugly_move:Object):Object {
+		private function make_pretty(ugly_move:Object):Object {
 			var move = clone(ugly_move);
 			move.san = move_to_san(move, false);
 			move.to = algebraic(move.to);
@@ -847,7 +841,7 @@
 			return move;
 		}
 		
-		public function clone(obj:Object):Object {
+		private function clone(obj:Object):Object {
 			var dupe = obj instanceof Array ? new Array() : new Object();
 			for (var property:String in obj) {
 				if (typeof property == 'object')
@@ -858,8 +852,14 @@
 			return dupe;
 		}
 		
-		public function trim(str:String):String {
+		private function trim(str:String):String {
 			return str.replace(/^\s+|\s+$/g, '');
+		}
+		
+		public function ChessEngine(fen:String = null) {
+			if(fen == null) {
+				load(DEFAULT_POSITION);
+			} else load(fen);
 		}
 	}
 }
