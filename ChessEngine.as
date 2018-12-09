@@ -130,7 +130,7 @@
 			b: EMPTY
 		};
 		
-		private var turn:String = WHITE;
+		public var turn:String = WHITE;
 		
 		private var castling:Object = {
 			w: 0,
@@ -307,7 +307,7 @@
 			return [fen, turn, cflags, epflags, half_moves, move_number].join(' ');
 		}
 		
-		private function set_header(args:Object):Object {
+		public function set_header(args:Object):Object {
 			for (var i = 0; i < args.length; i += 2)
 				header[args[i]] = args[i + 1];
 			return header;
@@ -774,7 +774,7 @@
 			return '';
 		}
 		
-		private function ascii():String {
+		public function ascii():String {
 			var s:String = '   +------------------------+\n';
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (file(i) === 0)
