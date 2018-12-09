@@ -459,7 +459,7 @@
 			return legal_moves;
 		}
 		
-		private function move_to_san(move:Object, sloppy:Boolean):String {
+		private function move_to_san(move:Object, sloppy:Boolean=false):String {
 			var output:String = '';
 			if (move.flags & BITS.KSIDE_CASTLE)
 				output = 'O-O';
@@ -1081,7 +1081,7 @@
 			while (history.length > 0)
 				reversed_history.push(undo_move());
 			while (reversed_history.length > 0) {
-				var move:Object = reversed_history.pop();
+				var move:String = reversed_history.pop();
 				move_history.push(move_to_san(move));
 				make_move(move);
 			}
