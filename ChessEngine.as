@@ -367,7 +367,9 @@
 			function add_move(board:Object, moves:Array, from:String, to:String, flags:int) {
 				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
 					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
-					for (var i = 0:int, len:int = pieces.length; i < len; i++)
+					var i:int = 0;
+					var len:int = pieces.length;
+					for (; i < len; i++)
 						moves.push(build_move(board, from, to, flags, pieces[i]));
 				} else
 					moves.push(build_move(board, from, to, flags));
@@ -954,6 +956,79 @@
 				current_width += moves[i].length;
 			}
 			return result.join('');
+		}
+		
+		public function load_pgn(pgn:String):Boolean {
+			function mask(str:String):String {
+				return str.replace(/\\/g, '\\');
+			}
+			
+			function has_keys(object:Object):Boolean {
+				for (var key in object)
+					return true;
+				return false;
+			}
+			
+			function parse_pgn_header(header:String):Object {
+				var newline_char ='\r?\n';
+				var header_obj = {};
+				var headers = header.split(new RegExp(mask(newline_char)));
+				var key = '';
+				var value = '';
+				for (var i = 0; i < headers.length; i++) {
+					key = headers[i].replace(/^\[([A-Z][A-Za-z] *)\s.*\]$/, '$1');
+					value = headers[i].replace(/^\[[A-Za-z]+\s"(.*)"\]$/, '$1');
+					if (trim(key).length > 0)
+						header_obj[key] = value;
+				}
+				return header_obj;
+			}
+			
+			var newline_char:String = '\r?\n';
+			var header_regex:RegExp = new RegExp('^(\\[((?:' + mask(newline_char) + ')|.)*\\])' + '(?:' + mask(newline_char) + '){2}');
+			var header_string:String = header_regex.test(pgn) ? header_regex.exec(pgn)[1] : '';
+			reset();
+			var headers:Object = parse_pgn_header(header_string);
+			for (var key:String in headers)
+				set_header([key, headers[key]]);
+			if (headers['SetUp'] === '1')
+				if (!('FEN' in headers && load(headers['FEN'], true)))
+					return false;
+			var ms:String = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
+			ms = ms.replace(/(\ {[^}]+\})+?/g, '');
+			var rav_regex:RegExp = /(\([^\(\)]+\))+?/g;
+			while (rav_regex.test(ms))
+			ms = ms.replace(rav_regex, '');
+			ms = ms.replace(/\d+\.(\.\.)?/g, '');
+			ms = ms.replace(/\.\.\./g, '');
+			ms = ms.replace(/\$\d+/g, '');
+		
+			var moves:Array = trim(ms).split(new RegExp(/\s+/));
+		
+			moves = moves.join(',').replace(/,,+/g, ',').split(',');
+			
+			var move:String = '';
+		
+			for (var half_move:int = 0; half_move < moves.length - 1; half_move++) {
+				move = move_from_san(moves[half_move], sloppy);
+				if (move == null)
+					return false;
+				else
+					make_move(move);
+			}
+		
+			move = moves[moves.length - 1];
+			if (POSSIBLE_RESULTS.indexOf(move) > -1)
+				if (has_keys(header) && header.Result == undefined)
+						set_header(['Result', move]);
+			else {
+				move = move_from_san(move, sloppy);
+				if (move == null)
+					return false;
+				else
+					make_move(move);
+			}
+			return true;
 		}
 	}
 }
