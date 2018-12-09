@@ -890,8 +890,8 @@
 		}
 		
 		public function board():Array {
-			var output = new Array(), row = new Array();
-			for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+			var output:Array = new Array(), row:Array = new Array();
+			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (board[i] == null)
 					row.push(null);
 				else
@@ -903,6 +903,57 @@
 				}
 			}
 			return output;
+		}
+		
+		function pgn():String {
+			var newline:String = '\n';
+			var max_width:int = 80;
+			var result:Array = new Array();
+			var header_exists:Boolean = false;
+			for (var i:String in header) {
+				result.push('[' + i + ' "' + header[i] + '"]' + newline);
+				header_exists = true;
+			}
+			if (header_exists && history.length)
+				result.push(newline);
+			var reversed_history:Array = new Array();
+			while (history.length > 0)
+				reversed_history.push(undo_move());
+			var moves:Array = new Array();
+			var move_string:String = '';
+			while (reversed_history.length > 0) {
+				var move:Object = reversed_history.pop();
+				if (!history.length && move.color === 'b')
+					move_string = move_number + '. ...';
+				else if (move.color === 'w') {
+					if (move_string.length)
+						moves.push(move_string);
+					move_string = move_number + '.';
+				}
+				move_string = move_string + ' ' + move_to_san(move, false);
+				make_move(move);
+			}
+			if (move_string.length)
+				moves.push(move_string);
+			if (header.Result != undefined)
+				moves.push(header.Result);
+			if (max_width === 0)
+				return result.join('') + moves.join(' ');
+			var current_width:int = 0;
+			for (var i:int = 0; i < moves.length; i++) {
+				if (current_width + moves[i].length > max_width && i != 0) {
+					if (result[result.length - 1] === ' ')
+						result.pop();
+					result.push(newline);
+					current_width = 0;
+				} else if (i != 0) {
+					result.push(' ');
+					current_width++;
+				}
+				result.push(moves[i]);
+				current_width += moves[i].length;
+			}
+			return result.join('');
 		}
 	}
 }
