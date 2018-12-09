@@ -325,7 +325,7 @@
 		}
 		
 		public function getSquare(square:String):Object {
-			var piece:int = board[SQUARES[square]];
+			var piece:String = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 		
@@ -375,8 +375,8 @@
 					moves.push(build_move(board, from, to, flags));
 			}
 			var moves:Array = new Array();
-			var us:int = turn;
-			var them:int = swap_color(us);
+			var us:String = turn;
+			var them:String = swap_color(us);
 			var second_rank:Object = { b: RANK_7, w: RANK_2 };
 			var first_sq:int = SQUARES.a8;
 			var last_sq:int = SQUARES.h1;
@@ -395,7 +395,7 @@
 					i += 7;
 					continue;
 				}
-				var piece:int = board[i];
+				var piece:String = board[i];
 				if (piece == null || piece.color != us)
 					continue;
 				if (piece.type == PAWN) {
@@ -891,7 +891,7 @@
 			return moves;
 		}
 		
-		public function board():Array {
+		public function getBoard():Array {
 			var output:Array = new Array(), row:Array = new Array();
 			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (board[i] == null)
@@ -942,18 +942,18 @@
 			if (max_width === 0)
 				return result.join('') + moves.join(' ');
 			var current_width:int = 0;
-			for (var i:int = 0; i < moves.length; i++) {
-				if (current_width + moves[i].length > max_width && i != 0) {
+			for (var it:int = 0; it < moves.length; it++) {
+				if (current_width + moves[it].length > max_width && it != 0) {
 					if (result[result.length - 1] === ' ')
 						result.pop();
 					result.push(newline);
 					current_width = 0;
-				} else if (i != 0) {
+				} else if (it != 0) {
 					result.push(' ');
 					current_width++;
 				}
-				result.push(moves[i]);
-				current_width += moves[i].length;
+				result.push(moves[it]);
+				current_width += moves[it].length;
 			}
 			return result.join('');
 		}
@@ -1075,7 +1075,7 @@
 			return null;
 		}
 		
-		public function history():Array {
+		public function getHistory():Array {
 			var reversed_history:Array = new Array();
 			var move_history:Array = new Array();
 			while (history.length > 0)
