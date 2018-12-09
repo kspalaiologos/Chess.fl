@@ -907,7 +907,7 @@
 			return output;
 		}
 		
-		function pgn():String {
+		public function pgn():String {
 			var newline:String = '\n';
 			var max_width:int = 80;
 			var result:Array = new Array();
@@ -1065,6 +1065,14 @@
     		}
     		update_setup(generate_fen());
     		return piece;
+		}
+		
+		public function square_color(square:String):String {
+			if (square in SQUARES) {
+				var sq_0x88:int = SQUARES[square];
+				return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark';
+			}
+			return null;
 		}
 	}
 }
