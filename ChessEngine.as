@@ -888,5 +888,21 @@
 				moves.push(move_to_san(ugly_moves[i], false));
 			return moves;
 		}
+		
+		public function board():Array {
+			var output = new Array(), row = new Array();
+			for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+				if (board[i] == null)
+					row.push(null);
+				else
+					row.push({ type: board[i].type, color: board[i].color });
+				if ((i + 1) & 0x88) {
+					output.push(row);
+					row = new Array();
+					i += 8;
+				}
+			}
+			return output;
+		}
 	}
 }
