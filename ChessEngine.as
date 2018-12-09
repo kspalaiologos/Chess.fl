@@ -395,7 +395,7 @@
 					i += 7;
 					continue;
 				}
-				var piece:String = board[i];
+				var piece:Object = board[i];
 				if (piece == null || piece.color != us)
 					continue;
 				if (piece.type == PAWN) {
