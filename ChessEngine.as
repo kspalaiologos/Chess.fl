@@ -1056,5 +1056,15 @@
 			var move = undo_move();
 			return move ? make_pretty(move) : null;
 		}
+		
+		public function remove(square:String):Object {
+    		var piece:Object = getSquare(square);
+    		board[SQUARES[square]] = null;
+    		if (piece && piece.type == KING) {
+      			kings[piece.color] = EMPTY;
+    		}
+    		update_setup(generate_fen());
+    		return piece;
+		}
 	}
 }
