@@ -324,12 +324,12 @@
 			}
 		}
 		
-		private function getSquare(square:String):Object {
+		public function getSquare(square:String):Object {
 			var piece:int = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 		
-		private function put(piece:Object, square:String):Boolean {
+		public function put(piece:Object, square:String):Boolean {
 			if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1)
 				return false;
 			if (!(square in SQUARES))
