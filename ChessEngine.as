@@ -363,8 +363,8 @@
 			return move;
 		}
 		
-		private function generate_moves(options:Object):Array {
-			function add_move(board:Object, moves:Array, from:String, to:String, flags:int) {
+		private function generate_moves(options:Object = {}):Array {
+			function add_move(board:Array, moves:Array, from:String, to:int, flags:int) {
 				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
 					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
 					var i:int = 0;
@@ -372,7 +372,7 @@
 					for (; i < len; i++)
 						moves.push(build_move(board, from, to, flags, pieces[i]));
 				} else
-					moves.push(build_move(board, from, to, flags));
+					moves.push(build_move(board, from, to, flags, undefined));
 			}
 			var moves:Array = new Array();
 			var us:String = turn;
