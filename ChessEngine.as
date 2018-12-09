@@ -1030,5 +1030,31 @@
 			}
 			return true;
 		}
+		
+		public function move(mov:*):Object {
+			var sloppy:Boolean = false;
+			var move_obj:Object = null;
+			if (typeof mov == 'string')
+				move_obj = move_from_san(mov, sloppy);
+		
+			else if (typeof mov == 'object') {
+				var moves = generate_moves();
+				for (var i:int = 0, len:int = moves.length; i < len; i++)
+					if (mov.from == algebraic(moves[i].from) && mov.to == algebraic(moves[i].to) && (!('promotion' in moves[i]) ||  mov.promotion == moves[i].promotion)) {
+						move_obj = moves[i];
+						break;
+					}
+			}
+			if (!move_obj)
+				return null;
+			var pretty_move:Object = make_pretty(move_obj);
+			make_move(move_obj);
+			return pretty_move;
+		}
+		
+		public function undo():Object {
+			var move = undo_move();
+			return move ? make_pretty(move) : null;
+		}
 	}
 }
