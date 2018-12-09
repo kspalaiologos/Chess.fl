@@ -325,7 +325,7 @@
 		}
 		
 		public function getSquare(square:String):Object {
-			var piece:String = board[SQUARES[square]];
+			var piece:Object = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 		
@@ -840,7 +840,7 @@
 			return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
 		}
 		
-		private function swap_color(c:int):String {
+		private function swap_color(c:String):String {
 			return c == WHITE ? BLACK : WHITE;
 		}
 		
