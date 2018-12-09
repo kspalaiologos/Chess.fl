@@ -1074,5 +1074,18 @@
 			}
 			return null;
 		}
+		
+		public function history():Array {
+			var reversed_history:Array = new Array();
+			var move_history:Array = new Array();
+			while (history.length > 0)
+				reversed_history.push(undo_move());
+			while (reversed_history.length > 0) {
+				var move:Object = reversed_history.pop();
+				move_history.push(move_to_san(move));
+				make_move(move);
+			}
+			return move_history;
+		}
 	}
 }
