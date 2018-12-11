@@ -842,7 +842,7 @@ package {
 		
 		private function algebraic(i:*):* {
 			var f:* = file(i), r:* = rank(i);
-			return 'abcdefgh'.sub*(f, f + 1) + '87654321'.sub*(r, r + 1);
+			return 'abcdefgh'.subString(f, f + 1) + '87654321'.subString(r, r + 1);
 		}
 		
 		private function swap_color(c:*):* {
@@ -1015,7 +1015,7 @@ package {
 			var move:* = '';
 		
 			for (var half_move:* = 0; half_move < moves.length - 1; half_move++) {
-				move = move_from_san(moves[half_move], sloppy);
+				move = move_from_san(moves[half_move]);
 				if (move == null)
 					return false;
 				else
@@ -1027,7 +1027,7 @@ package {
 				if (has_keys(header) && header.Result == undefined)
 						set_header(['Result', move]);
 			else {
-				move = move_from_san(move, sloppy);
+				move = move_from_san(move);
 				if (move == null)
 					return false;
 				else
