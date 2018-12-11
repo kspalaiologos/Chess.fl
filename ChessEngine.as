@@ -368,7 +368,7 @@ package {
 			return move;
 		}
 		
-		private function generate_moves(options:Object = {}):Array {
+		private function generate_moves(options:Object={}):Array {
 			function add_move(board:Array, moves:Array, from:*, to:*, flags:*) {
 				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
 					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
@@ -803,7 +803,7 @@ package {
 			return s;
 		}
 		
-		private function move_from_san(move:Object, sloppy:Boolean):Object {
+		private function move_from_san(move:Object, sloppy:Boolean=true):Object {
 			var clean_move:* = stripped_san(move);
 			if (sloppy) {
 				var matches:Array = clean_move.match(/([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/);
