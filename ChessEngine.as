@@ -842,7 +842,7 @@ package {
 		
 		private function algebraic(i:*):* {
 			var f:* = file(i), r:* = rank(i);
-			return 'abcdefgh'.subString(f, f + 1) + '87654321'.subString(r, r + 1);
+			return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
 		}
 		
 		private function swap_color(c:*):* {
