@@ -1,4 +1,9 @@
-﻿package {
+
+/* Chess.FL - AS3 port of chess.js */
+/* Copyright (C) 2018 by Kamila Szewczyk */
+/* Licensed under terms of GNU GPLv3 license */
+
+package {
 	public class ChessEngine {
 		public var BLACK:String = 'b';
 		public var WHITE:String = 'w';
