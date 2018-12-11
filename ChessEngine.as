@@ -1,4 +1,4 @@
-
+﻿
 /* Chess.FL - AS3 port of chess.js */
 /* Copyright (C) 2018 by Kamila Szewczyk */
 /* Licensed under terms of GNU GPLv3 license */
@@ -182,7 +182,7 @@ package {
 				if (piece == '/') {
 					square += 8;
 				} else if (is_digit(piece)) {
-					square += parse*(piece, 10);
+					square += parseInt(piece, 10);
 				} else {
 					var color = piece < 'a' ? WHITE : BLACK;
 					put({type: piece.toLowerCase(), color: color}, algebraic(square));
@@ -206,8 +206,8 @@ package {
 			}
 		
 			ep_square = tokens[3] == '-' ? EMPTY : SQUARES[tokens[3]];
-			half_moves = parse*(tokens[4], 10);
-			move_number = parse*(tokens[5], 10);
+			half_moves = parseInt(tokens[4], 10);
+			move_number = parseInt(tokens[5], 10);
 		
 			update_setup(generate_fen());
 		
@@ -233,9 +233,9 @@ package {
 			var tokens:Array = fen.split(/\s+/);
 			if (tokens.length !== 6)
 				return { valid: false, error_number: 1, error: errors[1] };
-			if (isNaN(tokens[5]) || parse*(tokens[5], 10) <= 0)
+			if (isNaN(tokens[5]) || parseInt(tokens[5], 10) <= 0)
 				return { valid: false, error_number: 2, error: errors[2] };
-			if (isNaN(tokens[4]) || parse*(tokens[4], 10) < 0)
+			if (isNaN(tokens[4]) || parseInt(tokens[4], 10) < 0)
 				return { valid: false, error_number: 3, error: errors[3] };
 			if (!/^(-|[abcdefgh][36])$/.test(tokens[3]))
 				return { valid: false, error_number: 4, error: errors[4] };
@@ -254,7 +254,7 @@ package {
 					if (!isNaN(rows[i][k])) {
 						if (previous_was_number)
 							return { valid: false, error_number: 8, error: errors[8] };
-						sum_fields += parse*(rows[i][k], 10);
+						sum_fields += parseInt(rows[i][k], 10);
 						previous_was_number = true;
 					} else {
 						if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
@@ -991,15 +991,15 @@ package {
 			
 			var newline_char:* = '\r?\n';
 			var header_regex:RegExp = new RegExp('^(\\[((?:' + mask(newline_char) + ')|.)*\\])' + '(?:' + mask(newline_char) + '){2}');
-			var header_*:* = header_regex.test(pgn) ? header_regex.exec(pgn)[1] : '';
+			var header_string:* = header_regex.test(pgn) ? header_regex.exec(pgn)[1] : '';
 			reset();
-			var headers:Object = parse_pgn_header(header_*);
-			for (var key:* in headers)
+			var headers:Object = parse_pgn_header(header_string);
+			for (var key in headers)
 				set_header([key, headers[key]]);
 			if (headers['SetUp'] === '1')
 				if (!('FEN' in headers && load(headers['FEN'], true)))
 					return false;
-			var ms:* = pgn.replace(header_*, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
+			var ms:* = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
 			ms = ms.replace(/(\ {[^}]+\})+?/g, '');
 			var rav_regex:RegExp = /(\([^\(\)]+\))+?/g;
 			while (rav_regex.test(ms))
