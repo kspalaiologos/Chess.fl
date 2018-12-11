@@ -1,17 +1,17 @@
 ﻿package {
 	public class ChessEngine {
-		public var BLACK:String = 'b';
-		public var WHITE:String = 'w';
-		private var EMPTY:int = -1;
+		public var BLACK:* = 'b';
+		public var WHITE:* = 'w';
+		private var EMPTY:* = -1;
 		
-		public var PAWN:String = 'p';
-		public var KNIGHT:String = 'n';
-		public var BISHOP:String = 'b';
-		public var ROOK:String = 'r';
-		public var QUEEN:String = 'q';
-		public var KING:String = 'k';
-		private var SYMBOLS:String = 'pnbrqkPNBRQK';
-		private var DEFAULT_POSITION:String = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+		public var PAWN:* = 'p';
+		public var KNIGHT:* = 'n';
+		public var BISHOP:* = 'b';
+		public var ROOK:* = 'r';
+		public var QUEEN:* = 'q';
+		public var KING:* = 'k';
+		private var SYMBOLS:* = 'pnbrqkPNBRQK';
+		private var DEFAULT_POSITION:* = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 		private var POSSIBLE_RESULTS:Array = new Array('1-0', '0-1', '1/2-1/2', '*');
 		
 		private var PAWN_OFFSETS:Object = {
@@ -92,14 +92,14 @@
 			QSIDE_CASTLE: 64
 		};
 		
-		private var RANK_1:int = 7;
-		private var RANK_2:int = 6;
-		private var RANK_3:int = 5;
-		private var RANK_4:int = 4;
-		private var RANK_5:int = 3;
-		private var RANK_6:int = 2;
-		private var RANK_7:int = 1;
-		private var RANK_8:int = 0;
+		private var RANK_1:* = 7;
+		private var RANK_2:* = 6;
+		private var RANK_3:* = 5;
+		private var RANK_4:* = 4;
+		private var RANK_5:* = 3;
+		private var RANK_6:* = 2;
+		private var RANK_7:* = 1;
+		private var RANK_8:* = 0;
 		
 		private var SQUARES:Object = {
 			a8:	  0, b8:   1, c8:	2, d8:	 3, e8:	  4, f8:   5, g8:	6, h8:	 7,
@@ -130,16 +130,16 @@
 			b: EMPTY
 		};
 		
-		public var turn:String = WHITE;
+		public var turn:* = WHITE;
 		
 		private var castling:Object = {
 			w: 0,
 			b: 0
 		};
 		
-		private var ep_square:int = EMPTY;
-		private var half_moves:int = 0;
-		private var move_number:int = 1;
+		private var ep_square:* = EMPTY;
+		private var half_moves:* = 0;
+		private var move_number:* = 1;
 		private var history:Array = new Array();
 		private var header:Object = new Object();
 		
@@ -161,23 +161,23 @@
 			load(DEFAULT_POSITION);
 		}
 		
-		public function load(fen:String, keep_headers:Boolean = false):Boolean {
+		public function load(fen:*, keep_headers:Boolean = false):Boolean {
 			var tokens:Array = fen.split(/\s+/);
-			var position:String = tokens[0];
-			var square:int = 0;
+			var position:* = tokens[0];
+			var square:* = 0;
 		
 			if (!validate_fen(fen).valid)
 				return false;
 			
 			clear(keep_headers);
 		
-			for (var i:int = 0; i < position.length; i++) {
-				var piece:String = position.charAt(i);
+			for (var i:* = 0; i < position.length; i++) {
+				var piece:* = position.charAt(i);
 		
 				if (piece == '/') {
 					square += 8;
 				} else if (is_digit(piece)) {
-					square += parseInt(piece, 10);
+					square += parse*(piece, 10);
 				} else {
 					var color = piece < 'a' ? WHITE : BLACK;
 					put({type: piece.toLowerCase(), color: color}, algebraic(square));
@@ -201,20 +201,20 @@
 			}
 		
 			ep_square = tokens[3] == '-' ? EMPTY : SQUARES[tokens[3]];
-			half_moves = parseInt(tokens[4], 10);
-			move_number = parseInt(tokens[5], 10);
+			half_moves = parse*(tokens[4], 10);
+			move_number = parse*(tokens[5], 10);
 		
 			update_setup(generate_fen());
 		
 			return true;
 		}
 		
-		public function validate_fen(fen:String):Object {
+		public function validate_fen(fen:*):Object {
 			var errors = new Array(
 				'No errors.',
-				'FEN string must contain six space-delimited fields.',
-				'6th field (move number) must be a positive integer.',
-				'5th field (half move counter) must be a non-negative integer.',
+				'FEN * must contain six space-delimited fields.',
+				'6th field (move number) must be a positive *eger.',
+				'5th field (half move counter) must be a non-negative *eger.',
 				'4th field (en-passant square) is invalid.',
 				'3rd field (castling availability) is invalid.',
 				'2nd field (side to move) is invalid.',
@@ -228,9 +228,9 @@
 			var tokens:Array = fen.split(/\s+/);
 			if (tokens.length !== 6)
 				return { valid: false, error_number: 1, error: errors[1] };
-			if (isNaN(tokens[5]) || parseInt(tokens[5], 10) <= 0)
+			if (isNaN(tokens[5]) || parse*(tokens[5], 10) <= 0)
 				return { valid: false, error_number: 2, error: errors[2] };
-			if (isNaN(tokens[4]) || parseInt(tokens[4], 10) < 0)
+			if (isNaN(tokens[4]) || parse*(tokens[4], 10) < 0)
 				return { valid: false, error_number: 3, error: errors[3] };
 			if (!/^(-|[abcdefgh][36])$/.test(tokens[3]))
 				return { valid: false, error_number: 4, error: errors[4] };
@@ -241,15 +241,15 @@
 			var rows:Array = tokens[0].split('/');
 			if (rows.length !== 8)
 				return { valid: false, error_number: 7, error: errors[7] };
-			for (var i:int = 0; i < rows.length; i++) {
-				var sum_fields:int = 0;
+			for (var i:* = 0; i < rows.length; i++) {
+				var sum_fields:* = 0;
 				var previous_was_number:Boolean = false;
 		
-				for (var k:int = 0; k < rows[i].length; k++) {
+				for (var k:* = 0; k < rows[i].length; k++) {
 					if (!isNaN(rows[i][k])) {
 						if (previous_was_number)
 							return { valid: false, error_number: 8, error: errors[8] };
-						sum_fields += parseInt(rows[i][k], 10);
+						sum_fields += parse*(rows[i][k], 10);
 						previous_was_number = true;
 					} else {
 						if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
@@ -269,10 +269,10 @@
 			return { valid: true, error_number: 0, error: errors[0] };
 		}
 		
-		public function generate_fen():String {
-			var empty:int = 0;
-			var fen:String = '';
-			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+		public function generate_fen():* {
+			var empty:* = 0;
+			var fen:* = '';
+			for (var i:* = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (board[i] == null)
 					empty++;
 				else {
@@ -280,8 +280,8 @@
 						fen += empty;
 						empty = 0;
 					}
-					var color:String = board[i].color;
-					var piece:String = board[i].type;
+					var color:* = board[i].color;
+					var piece:* = board[i].type;
 					fen += color == WHITE ? piece.toUpperCase() : piece.toLowerCase();
 				}
 				if ((i + 1) & 0x88) {
@@ -293,7 +293,7 @@
 					i += 8;
 				}
 			}
-			var cflags:String = '';
+			var cflags:* = '';
 			if (castling[WHITE] & BITS.KSIDE_CASTLE)
 				cflags += 'K';
 			if (castling[WHITE] & BITS.QSIDE_CASTLE)
@@ -303,7 +303,7 @@
 			if (castling[BLACK] & BITS.QSIDE_CASTLE)
 				cflags += 'q';
 			cflags = cflags || '-';
-			var epflags:String = ep_square == EMPTY ? '-' : algebraic(ep_square);
+			var epflags:* = ep_square == EMPTY ? '-' : algebraic(ep_square);
 			return [fen, turn, cflags, epflags, half_moves, move_number].join(' ');
 		}
 		
@@ -313,7 +313,7 @@
 			return header;
 		}
 		
-		private function update_setup(fen:String):void {
+		private function update_setup(fen:*):void {
 			if (history.length > 0) return;
 			if (fen != DEFAULT_POSITION) {
 				header['SetUp'] = '1';
@@ -324,17 +324,17 @@
 			}
 		}
 		
-		public function getSquare(square:String):Object {
+		public function getSquare(square:*):Object {
 			var piece:Object = board[SQUARES[square]];
 			return piece != null ? { type: piece.type, color: piece.color } : null;
 		}
 		
-		public function put(piece:Object, square:String):Boolean {
+		public function put(piece:Object, square:*):Boolean {
 			if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1)
 				return false;
 			if (!(square in SQUARES))
 				return false;
-			var sq:int = SQUARES[square];
+			var sq:* = SQUARES[square];
 			if (piece.type == KING && !(kings[piece.color] == EMPTY || kings[piece.color] == sq))
 				return false;
 			board[sq] = { type: piece.type, color: piece.color };
@@ -344,7 +344,7 @@
 			return true;
 		}
 		
-		private function build_move(board:Array, from:String, to:String, flags:int, promotion:int):Object {
+		private function build_move(board:Array, from:*, to:*, flags:*, promotion:*):Object {
 			var move:Object = {
 				color: turn,
 				from: from,
@@ -364,22 +364,22 @@
 		}
 		
 		private function generate_moves(options:Object = {}):Array {
-			function add_move(board:Array, moves:Array, from:String, to:int, flags:int) {
+			function add_move(board:Array, moves:Array, from:*, to:*, flags:*) {
 				if (board[from].type === PAWN && (rank(to) === RANK_8 || rank(to) === RANK_1)) {
 					var pieces:Array = new Array(QUEEN, ROOK, BISHOP, KNIGHT);
-					var i:int = 0;
-					var len:int = pieces.length;
+					var i:* = 0;
+					var len:* = pieces.length;
 					for (; i < len; i++)
 						moves.push(build_move(board, from, to, flags, pieces[i]));
 				} else
 					moves.push(build_move(board, from, to, flags, undefined));
 			}
 			var moves:Array = new Array();
-			var us:String = turn;
-			var them:String = swap_color(us);
+			var us:* = turn;
+			var them:* = swap_color(us);
 			var second_rank:Object = { b: RANK_7, w: RANK_2 };
-			var first_sq:int = SQUARES.a8;
-			var last_sq:int = SQUARES.h1;
+			var first_sq:* = SQUARES.a8;
+			var last_sq:* = SQUARES.h1;
 			var single_square:Boolean = false;
 			var legal:Boolean = options.legal;
 			if (options.square >= 0 || options.square < 0) {
@@ -390,7 +390,7 @@
 					return new Array();
 				}
 			}
-			for (var i:int = first_sq; i <= last_sq; i++) {
+			for (var i:* = first_sq; i <= last_sq; i++) {
 				if (i & 0x88) {
 					i += 7;
 					continue;
@@ -399,15 +399,15 @@
 				if (piece == null || piece.color != us)
 					continue;
 				if (piece.type == PAWN) {
-					var square:int = i + PAWN_OFFSETS[us][0];
+					var square:* = i + PAWN_OFFSETS[us][0];
 					if (board[square] == null) {
 						add_move(board, moves, i, square, BITS.NORMAL);
-						var square:int = i + PAWN_OFFSETS[us][1];
+						var square:* = i + PAWN_OFFSETS[us][1];
 						if (second_rank[us] == rank(i) && board[square] == null)
 							add_move(board, moves, i, square, BITS.BIG_PAWN);
 					}
 					for (j = 2; j < 4; j++) {
-						var square:int = i + PAWN_OFFSETS[us][j];
+						var square:* = i + PAWN_OFFSETS[us][j];
 						if (square & 0x88) continue;
 						if (board[square] != null && board[square].color == them)
 							add_move(board, moves, i, square, BITS.CAPTURE);
@@ -415,9 +415,9 @@
 							add_move(board, moves, i, ep_square, BITS.EP_CAPTURE);
 					}
 				} else {
-					for (var j:int = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
-						var offset:int = PIECE_OFFSETS[piece.type][j];
-						var square:int = i;
+					for (var j:* = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+						var offset:* = PIECE_OFFSETS[piece.type][j];
+						var square:* = i;
 						while (true) {
 							square += offset;
 							if (square & 0x88) break;
@@ -435,14 +435,14 @@
 			}
 			if (!single_square || last_sq === kings[us]) {
 				if (castling[us] & BITS.KSIDE_CASTLE) {
-					var castling_from:int = kings[us];
-					var castling_to:int = castling_from + 2;
+					var castling_from:* = kings[us];
+					var castling_to:* = castling_from + 2;
 					if (board[castling_from + 1] == null && board[castling_to] == null && !attacked(them, kings[us]) && !attacked(them, castling_from + 1) && !attacked(them, castling_to))
 						add_move(board, moves, kings[us], castling_to, BITS.KSIDE_CASTLE);
 				}
 				if (castling[us] & BITS.QSIDE_CASTLE) {
-					var castling_from:int = kings[us];
-					var castling_to:int = castling_from - 2;
+					var castling_from:* = kings[us];
+					var castling_to:* = castling_from - 2;
 					if (board[castling_from - 1] == null && board[castling_from - 2] == null && board[castling_from - 3] == null && !attacked(them, kings[us]) && !attacked(them, castling_from - 1) && !attacked(them, castling_to))
 						add_move(board, moves, kings[us], castling_to, BITS.QSIDE_CASTLE);
 				}
@@ -450,7 +450,7 @@
 			if (!legal)
 				return moves;
 			var legal_moves:Array = new Array();
-			for (var i:int = 0, len = moves.length; i < len; i++) {
+			for (var i:* = 0, len = moves.length; i < len; i++) {
 				make_move(moves[i]);
 				if (!king_attacked(us))
 					legal_moves.push(moves[i]);
@@ -459,8 +459,8 @@
 			return legal_moves;
 		}
 		
-		private function move_to_san(move:Object, sloppy:Boolean=false):String {
-			var output:String = '';
+		private function move_to_san(move:Object, sloppy:Boolean=false):* {
+			var output:* = '';
 			if (move.flags & BITS.KSIDE_CASTLE)
 				output = 'O-O';
 			else if (move.flags & BITS.QSIDE_CASTLE)
@@ -490,20 +490,20 @@
 			return output;
 		}
 		
-		private function stripped_san(move:String):String {
+		private function stripped_san(move:*):* {
 			return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
 		}
 		
-		private function attacked(color:String, square:int):Boolean {
-			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+		private function attacked(color:*, square:*):Boolean {
+			for (var i:* = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (i & 0x88) {
 					i += 7;
 					continue;
 				}
 				if (board[i] == null || board[i].color != color) continue;
 				var piece:Object = board[i];
-				var difference:int = i - square;
-				var index:int = difference + 119;
+				var difference:* = i - square;
+				var index:* = difference + 119;
 				if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
 					if (piece.type == PAWN) {
 						if (difference > 0) {
@@ -517,8 +517,8 @@
 					}
 					if (piece.type === 'n' || piece.type === 'k')
 						return true;
-					var offset:int = RAYS[index];
-					var j:int = i + offset;
+					var offset:* = RAYS[index];
+					var j:* = i + offset;
 					var blocked:Boolean = false;
 					while (j != square) {
 						if (board[j] != null) {
@@ -534,7 +534,7 @@
 			return false;
 		}
 		
-		private function king_attacked(color:String):Boolean {
+		private function king_attacked(color:*):Boolean {
 			return attacked(swap_color(color), kings[color]);
 		}
 		
@@ -572,9 +572,9 @@
 		public function insufficient_material():Boolean {
 			var pieces:Object = new Object();
 			var bishops:Array = new Array();
-			var num_pieces:int = 0;
-			var sq_color:int = 0;
-			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+			var num_pieces:* = 0;
+			var sq_color:* = 0;
+			for (var i:* = SQUARES.a8; i <= SQUARES.h1; i++) {
 				sq_color = (sq_color + 1) % 2;
 				if (i & 0x88) {
 					i += 7;
@@ -594,9 +594,9 @@
 			else if (num_pieces == 3 && (pieces[BISHOP] == 1 || pieces[KNIGHT] == 1))
 				return true;
 			else if (num_pieces === pieces[BISHOP] + 2) {
-				var sum:int = 0;
-				var len:int = bishops.length;
-				for (var i:int = 0; i < len; i++)
+				var sum:* = 0;
+				var len:* = bishops.length;
+				for (var i:* = 0; i < len; i++)
 					sum += bishops[i];
 				if (sum == 0 || sum == len)
 					return true;
@@ -614,7 +614,7 @@
 				moves.push(move);
 			}
 			while (true) {
-				var fen:String = generate_fen() .split(' ').slice(0, 4).join(' ');
+				var fen:* = generate_fen() .split(' ').slice(0, 4).join(' ');
 				positions[fen] = fen in positions ? positions[fen] + 1 : 1;
 				if (positions[fen] >= 3)
 					repetition = true;
@@ -625,7 +625,7 @@
 			return repetition;
 		}
 		
-		private function push(move:String):void {
+		private function push(move:*):void {
 			history.push({
 				move: move,
 				kings: { b: kings.b, w: kings.w },
@@ -637,9 +637,9 @@
 			});
 		}
 		
-		private function make_move(move:String):void {
-			var us:String = turn;
-			var them:String = swap_color(us);
+		private function make_move(move:*):void {
+			var us:* = turn;
+			var them:* = swap_color(us);
 			push(move);
 			board[move.to] = board[move.from];
 			board[move.from] = null;
@@ -654,20 +654,20 @@
 			if (board[move.to].type == KING) {
 				kings[board[move.to].color] = move.to;
 				if (move.flags & BITS.KSIDE_CASTLE) {
-					var castling_to:int = move.to - 1;
-					var castling_from:int = move.to + 1;
+					var castling_to:* = move.to - 1;
+					var castling_from:* = move.to + 1;
 					board[castling_to] = board[castling_from];
 					board[castling_from] = null;
 				} else if (move.flags & BITS.QSIDE_CASTLE) {
-					var castling_to:int = move.to + 1;
-					var castling_from:int = move.to - 2;
+					var castling_to:* = move.to + 1;
+					var castling_from:* = move.to - 2;
 					board[castling_to] = board[castling_from];
 					board[castling_from] = null;
 				}
 				castling[us] = '';
 			}
 			if (castling[us]) {
-				for (var i:int = 0, len:int = ROOKS[us].length; i < len; i++) {
+				for (var i:* = 0, len:* = ROOKS[us].length; i < len; i++) {
 					if (move.from === ROOKS[us][i].square && castling[us] & ROOKS[us][i].flag) {
 						castling[us] ^= ROOKS[us][i].flag;
 						break;
@@ -675,7 +675,7 @@
 				}
 			}
 			if (castling[them]) {
-				for (var i:int = 0, len:int = ROOKS[them].length; i < len; i++) {
+				for (var i:* = 0, len:* = ROOKS[them].length; i < len; i++) {
 					if (move.to == ROOKS[them][i].square && castling[them] & ROOKS[them][i].flag) {
 						castling[them] ^= ROOKS[them][i].flag;
 						break;
@@ -700,26 +700,26 @@
 			turn = swap_color(turn);
 		}
 		
-		private function undo_move():String {
+		private function undo_move():* {
 			var old:Object = history.pop();
 			if (old == null)
 				return null;
-			var move:String = old.move;
+			var move:* = old.move;
 			kings = old.kings;
 			turn = old.turn;
 			castling = old.castling;
 			ep_square = old.ep_square;
 			half_moves = old.half_moves;
 			move_number = old.move_number;
-			var us:String = turn;
-			var them:String = swap_color(turn);
+			var us:* = turn;
+			var them:* = swap_color(turn);
 			board[move.from] = board[move.to];
 			board[move.from].type = move.piece;
 			board[move.to] = null;
 			if (move.flags & BITS.CAPTURE) {
 				board[move.to] = { type: move.captured, color: them };
 			} else if (move.flags & BITS.EP_CAPTURE) {
-				var index:int;
+				var index:*;
 				if (us == BLACK)
 					index = move.to - 16;
 				else
@@ -741,17 +741,17 @@
 			return move;
 		}
 		
-		private function get_disambiguator(move:Object, sloppy:Boolean):String {
+		private function get_disambiguator(move:Object, sloppy:Boolean):* {
 			var moves:Array = generate_moves({ legal: !sloppy });
-			var from:String = move.from;
-			var to:String = move.to;
+			var from:* = move.from;
+			var to:* = move.to;
 			var piece:Object = move.piece;
-			var ambiguities:int = 0;
-			var same_rank:int = 0;
-			var same_file:int = 0;
-			for (var i:int = 0, len:int = moves.length; i < len; i++) {
-				var ambig_from:String = moves[i].from;
-				var ambig_to:String = moves[i].to;
+			var ambiguities:* = 0;
+			var same_rank:* = 0;
+			var same_file:* = 0;
+			for (var i:* = 0, len:* = moves.length; i < len; i++) {
+				var ambig_from:* = moves[i].from;
+				var ambig_to:* = moves[i].to;
 				var ambig_piece:Object = moves[i].piece;
 				if (piece === ambig_piece && from !== ambig_from && to === ambig_to) {
 					ambiguities++;
@@ -774,9 +774,9 @@
 			return '';
 		}
 		
-		public function ascii():String {
-			var s:String = '   +------------------------+\n';
-			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+		public function ascii():* {
+			var s:* = '   +------------------------+\n';
+			for (var i:* = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (file(i) === 0)
 					s += ' ' + '87654321'[rank(i)] + ' |';
 				if (board[i] == null)
@@ -799,18 +799,18 @@
 		}
 		
 		private function move_from_san(move:Object, sloppy:Boolean):Object {
-			var clean_move:String = stripped_san(move);
+			var clean_move:* = stripped_san(move);
 			if (sloppy) {
 				var matches:Array = clean_move.match(/([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/);
 				if (matches) {
 					var piece:Object = matches[1];
-					var from:String = matches[2];
-					var to:String = matches[3];
-					var promotion:int = matches[4];
+					var from:* = matches[2];
+					var to:* = matches[3];
+					var promotion:* = matches[4];
 				}
 			}
 			var moves:Array = generate_moves();
-			for (var i:int = 0, len = moves.length; i < len; i++) {
+			for (var i:* = 0, len = moves.length; i < len; i++) {
 				if (clean_move == stripped_san(move_to_san(moves[i])) || (sloppy && clean_move == stripped_san(move_to_san(moves[i], true))))
 					return moves[i];
 				else {
@@ -827,24 +827,24 @@
 			return null;
 		}
 		
-		private function rank(i:int):int {
+		private function rank(i:*):* {
 			return i >> 4;
 		}
 		
-		private function file(i:int):int {
+		private function file(i:*):* {
 			return i & 15;
 		}
 		
-		private function algebraic(i:int):String {
-			var f:int = file(i), r:int = rank(i);
-			return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
+		private function algebraic(i:*):* {
+			var f:* = file(i), r:* = rank(i);
+			return 'abcdefgh'.sub*(f, f + 1) + '87654321'.sub*(r, r + 1);
 		}
 		
-		private function swap_color(c:String):String {
+		private function swap_color(c:*):* {
 			return c == WHITE ? BLACK : WHITE;
 		}
 		
-		private function is_digit(c:String):Boolean {
+		private function is_digit(c:*):Boolean {
 			return '0123456789'.indexOf(c) != -1;
 		}
 		
@@ -853,8 +853,8 @@
 			move.san = move_to_san(move, false);
 			move.to = algebraic(move.to);
 			move.from = algebraic(move.from);
-			var flags:String = '';
-			for (var flag:int in BITS) {
+			var flags:* = '';
+			for (var flag:* in BITS) {
 				if (BITS[flag] & move.flags)
 					flags += FLAGS[flag];
 			}
@@ -864,7 +864,7 @@
 		
 		private function clone(obj:Object):Object {
 			var dupe = obj instanceof Array ? new Array() : new Object();
-			for (var property:String in obj) {
+			for (var property:* in obj) {
 				if (typeof property == 'object')
 					dupe[property] = clone(obj[property]);
 				else
@@ -873,11 +873,11 @@
 			return dupe;
 		}
 		
-		private function trim(str:String):String {
+		private function trim(str:*):* {
 			return str.replace(/^\s+|\s+$/g, '');
 		}
 		
-		public function ChessEngine(fen:String = null) {
+		public function ChessEngine(fen:* = null) {
 			if(fen == null) {
 				load(DEFAULT_POSITION);
 			} else load(fen);
@@ -886,14 +886,14 @@
 		public function moves(options:Object):Array {
 			var ugly_moves:Object = generate_moves(options);
 			var moves:Array = new Array();
-			for (var i:int = 0, len:int = ugly_moves.length; i < len; i++)
+			for (var i:* = 0, len:* = ugly_moves.length; i < len; i++)
 				moves.push(move_to_san(ugly_moves[i], false));
 			return moves;
 		}
 		
 		public function getBoard():Array {
 			var output:Array = new Array(), row:Array = new Array();
-			for (var i:int = SQUARES.a8; i <= SQUARES.h1; i++) {
+			for (var i:* = SQUARES.a8; i <= SQUARES.h1; i++) {
 				if (board[i] == null)
 					row.push(null);
 				else
@@ -907,12 +907,12 @@
 			return output;
 		}
 		
-		public function pgn():String {
-			var newline:String = '\n';
-			var max_width:int = 80;
+		public function pgn():* {
+			var newline:* = '\n';
+			var max_width:* = 80;
 			var result:Array = new Array();
 			var header_exists:Boolean = false;
-			for (var i:String in header) {
+			for (var i:* in header) {
 				result.push('[' + i + ' "' + header[i] + '"]' + newline);
 				header_exists = true;
 			}
@@ -922,7 +922,7 @@
 			while (history.length > 0)
 				reversed_history.push(undo_move());
 			var moves:Array = new Array();
-			var move_string:String = '';
+			var move_string:* = '';
 			while (reversed_history.length > 0) {
 				var move:Object = reversed_history.pop();
 				if (!history.length && move.color === 'b')
@@ -941,8 +941,8 @@
 				moves.push(header.Result);
 			if (max_width === 0)
 				return result.join('') + moves.join(' ');
-			var current_width:int = 0;
-			for (var it:int = 0; it < moves.length; it++) {
+			var current_width:* = 0;
+			for (var it:* = 0; it < moves.length; it++) {
 				if (current_width + moves[it].length > max_width && it != 0) {
 					if (result[result.length - 1] === ' ')
 						result.pop();
@@ -958,8 +958,8 @@
 			return result.join('');
 		}
 		
-		public function load_pgn(pgn:String):Boolean {
-			function mask(str:String):String {
+		public function load_pgn(pgn:*):Boolean {
+			function mask(str:*):* {
 				return str.replace(/\\/g, '\\');
 			}
 			
@@ -969,7 +969,7 @@
 				return false;
 			}
 			
-			function parse_pgn_header(header:String):Object {
+			function parse_pgn_header(header:*):Object {
 				var newline_char ='\r?\n';
 				var header_obj = {};
 				var headers = header.split(new RegExp(mask(newline_char)));
@@ -984,17 +984,17 @@
 				return header_obj;
 			}
 			
-			var newline_char:String = '\r?\n';
+			var newline_char:* = '\r?\n';
 			var header_regex:RegExp = new RegExp('^(\\[((?:' + mask(newline_char) + ')|.)*\\])' + '(?:' + mask(newline_char) + '){2}');
-			var header_string:String = header_regex.test(pgn) ? header_regex.exec(pgn)[1] : '';
+			var header_*:* = header_regex.test(pgn) ? header_regex.exec(pgn)[1] : '';
 			reset();
-			var headers:Object = parse_pgn_header(header_string);
-			for (var key:String in headers)
+			var headers:Object = parse_pgn_header(header_*);
+			for (var key:* in headers)
 				set_header([key, headers[key]]);
 			if (headers['SetUp'] === '1')
 				if (!('FEN' in headers && load(headers['FEN'], true)))
 					return false;
-			var ms:String = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
+			var ms:* = pgn.replace(header_*, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
 			ms = ms.replace(/(\ {[^}]+\})+?/g, '');
 			var rav_regex:RegExp = /(\([^\(\)]+\))+?/g;
 			while (rav_regex.test(ms))
@@ -1007,9 +1007,9 @@
 		
 			moves = moves.join(',').replace(/,,+/g, ',').split(',');
 			
-			var move:String = '';
+			var move:* = '';
 		
-			for (var half_move:int = 0; half_move < moves.length - 1; half_move++) {
+			for (var half_move:* = 0; half_move < moves.length - 1; half_move++) {
 				move = move_from_san(moves[half_move], sloppy);
 				if (move == null)
 					return false;
@@ -1034,12 +1034,12 @@
 		public function move(mov:*):Object {
 			var sloppy:Boolean = false;
 			var move_obj:Object = null;
-			if (typeof mov == 'string')
+			if (typeof mov == '*')
 				move_obj = move_from_san(mov, sloppy);
 		
 			else if (typeof mov == 'object') {
 				var moves = generate_moves();
-				for (var i:int = 0, len:int = moves.length; i < len; i++)
+				for (var i:* = 0, len:* = moves.length; i < len; i++)
 					if (mov.from == algebraic(moves[i].from) && mov.to == algebraic(moves[i].to) && (!('promotion' in moves[i]) ||  mov.promotion == moves[i].promotion)) {
 						move_obj = moves[i];
 						break;
@@ -1057,7 +1057,7 @@
 			return move ? make_pretty(move) : null;
 		}
 		
-		public function remove(square:String):Object {
+		public function remove(square:*):Object {
     		var piece:Object = getSquare(square);
     		board[SQUARES[square]] = null;
     		if (piece && piece.type == KING) {
@@ -1067,9 +1067,9 @@
     		return piece;
 		}
 		
-		public function square_color(square:String):String {
+		public function square_color(square:*):* {
 			if (square in SQUARES) {
-				var sq_0x88:int = SQUARES[square];
+				var sq_0x88:* = SQUARES[square];
 				return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark';
 			}
 			return null;
@@ -1081,7 +1081,7 @@
 			while (history.length > 0)
 				reversed_history.push(undo_move());
 			while (reversed_history.length > 0) {
-				var move:String = reversed_history.pop();
+				var move:* = reversed_history.pop();
 				move_history.push(move_to_san(move));
 				make_move(move);
 			}
