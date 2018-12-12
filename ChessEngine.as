@@ -1,4 +1,4 @@
-﻿
+
 /* Chess.FL - AS3 port of chess.js */
 /* Copyright (C) 2018 by Kamila Szewczyk */
 /* Licensed under terms of GNU GPLv3 license */
